@@ -1,0 +1,11 @@
+<div class="container">
+  <!-- your navs bound to current route fragments -->
+  <ul ngbNav [activeId]="route.fragment | async" class="nav-tabs navbar-primary">
+    <li [ngbNavItem]="link.fragment" *ngFor="let link of links">
+      <a ngbNavLink [routerLink]="link.fragment">{{ link.title }}</a>
+    </li>
+  </ul>
+
+  <h1>Displays the Birth Star</h1>
+  <router-outlet></router-outlet>
+</div>

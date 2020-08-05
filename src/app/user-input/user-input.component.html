@@ -1,0 +1,64 @@
+<form class="form">
+  <div class="form-group">
+    <div class="input-group">
+      <input class="form-control" placeholder="yyyy-mm-dd"
+             name="dp" [(ngModel)]="datePicker" ngbDatepicker #d="ngbDatepicker">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary "
+              (click)="d.toggle()"
+                 type="button">
+                 <i-bs name="calendar"></i-bs>
+        </button>
+      </div>
+    </div>
+ </div>
+</form>
+
+  <div class="input-group ">
+    <ngb-timepicker [(ngModel)]="time" meridian="true"></ngb-timepicker>
+  </div>
+  <div class="input-group">
+    <input placeholder="Select Country/Time Zone" type="text" class="form-control" [(ngModel)]="country" [ngbTypeahead]="search"/>
+  </div>
+<hr/>
+<button class="btn btn-primary"
+              (click)="calculate()"
+                 type="button">
+                 Calculate
+        </button>
+<hr/>
+<!-- <code>
+Model: {{ datePicker | json }}
+</code>
+
+<code>
+Model: {{ time | json }}
+</code>
+
+<code>
+Model: {{ country | json }}
+</code>
+-->
+<div class="card" style="width: 24rem;">
+  <img [src]="whatIsToday.rashiImg" class="card-img-top rounded-circle img-thumbnail shadow" [alt]="whatIsToday.rashi">
+  <div class="card-body">
+    <h5 class="card-title">{{whatIsToday.rashi}}</h5>
+    <p class="card-text">
+    Birth Star is  <strong>{{whatIsToday.nakshatra}}</strong> and Rashi is <strong>{{whatIsToday.rashi}}</strong>
+    </p>
+    <h3>Somehting About {{whatIsToday.rashi}}</h3>
+    <p class="card-text">
+    {{whatIsToday.prediction}}
+    </p>
+  </div>
+</div>
+<!--
+<hr>
+
+<div class="terminal">
+  <pre>{{whatIsToday | json}}</pre>
+</div>
+<div class="terminal">
+  <pre>{{zones | json}}</pre>
+</div>
+-->
