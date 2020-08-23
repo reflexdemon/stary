@@ -12,6 +12,7 @@ import { NgxBootstrapIconsModule } from 'ngx-bootstrap-icons';
 import { Calendar } from 'ngx-bootstrap-icons';
 
 import { AstroServiceService } from './astro-service.service';
+import { AstroListComponent } from './astro-list/astro-list.component';
 
 // Select some icons (use an object, not an array)
 const icons = {
@@ -22,7 +23,8 @@ const icons = {
     AppComponent,
     UserInputComponent,
     AboutComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    AstroListComponent
   ],
   imports: [
     BrowserModule,

@@ -77,4 +77,42 @@ export class AstroServiceService {
     astro['zodiacImg'] = `assets/img/sign/${imgDetail[0].zodiacImg}`;
     return astro;
   }
+
+  getListWithTransisionsInGMT(month:number, year:number):AstroResponse[] {
+    let response: AstroResponse[] = [] as AstroResponse[];
+    let days:number = this.getNumberOfDaysInAMonth(month, year);
+    for (var d=1;d<=days;d++ ) {
+      for (var h=0;h<=23;h++ ) {
+        for (var m=0;m<=59;m++ ) {
+          let r: AstroResponse =  this.getByDateAndZone(
+                                        d, month, year, h,
+                                        m, 0, false);
+          if (response.length === 0) {
+            response.push(r)
+          } else {
+            let prev: AstroResponse = response[response.length -1];
+            if (prev.nakshatra != r.nakshatra || prev.rashi != r.rashi) {
+              response.push(r);
+            }
+          }
+        }
+      }
+    }
+
+    return response;
+  }
+
+  getNumberOfDaysInAMonth(month:number, year:number):number {
+    if ([1, 3, 5, 7, 8, 10, 12].includes(month)) {
+      return 31;
+    }
+    if ([4, 6, 9, 11].includes(month)) {
+      return 30;
+    }
+    if ((year % 4) === 0) {
+      return 29;
+    } else {
+      return 28;
+    }
+  }
 }
