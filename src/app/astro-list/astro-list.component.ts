@@ -8,11 +8,11 @@ import { AstroResponse } from '../astro.response';
   styleUrls: ['./astro-list.component.scss']
 })
 export class AstroListComponent implements OnInit {
-  response:AstroResponse[];
-  constructor(private astroService:AstroServiceService) { }
+  response: AstroResponse[];
+  constructor(private astroService: AstroServiceService) { }
 
   ngOnInit(): void {
-    this.response = this.astroService.getListWithTransisionsInGMT(8, 2020)
+    this.response = this.astroService.getListWithTransisionsInGMT(8, 2020);
   }
 
 }

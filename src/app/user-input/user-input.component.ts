@@ -6,7 +6,7 @@ import { DataStore } from '../data.store';
 import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 
-const USER_DATA_STORAGE:string = 'USER_INPUT'
+const USER_DATA_STORAGE = 'USER_INPUT';
 @Component({
   selector: 'app-user-input',
   templateUrl: './user-input.component.html',
@@ -17,23 +17,23 @@ const USER_DATA_STORAGE:string = 'USER_INPUT'
 })
 export class UserInputComponent implements OnInit {
   datePicker: NgbDateStruct;
-  whatIsToday:AstroResponse;
+  whatIsToday: AstroResponse;
   zones: any;
-  today : Date;
+  today: Date;
   time = {hour: 13, minute: 30} as NgbTimeStruct;
   country: any;
   search: any;
-  dst:boolean;
+  dst: boolean;
   storage: DataStore;
-  offset:Number;
+  offset: number;
   constructor(private config: NgbInputDatepickerConfig,
               private calendar: NgbCalendar,
               private astroService: AstroServiceService) {
 
    }
 
-  load():void {
-    //Load value from browser cache
+  load(): void {
+    // Load value from browser cache
     if (sessionStorage.getItem(USER_DATA_STORAGE)) {
       this.storage = JSON.parse(sessionStorage.getItem(USER_DATA_STORAGE)) as DataStore;
     } else {
@@ -42,7 +42,7 @@ export class UserInputComponent implements OnInit {
     if (this.storage.day
         && this.storage.month
         && this.storage.year) {
-          //We have a datePicker
+          // We have a datePicker
           this.datePicker = {
             day: this.storage.day,
             year: this.storage.year,
@@ -70,7 +70,7 @@ export class UserInputComponent implements OnInit {
       this.offset = (this.today.getTimezoneOffset() / 60);
     }
 
-    if (this.storage.dst != undefined) {
+    if (this.storage.dst !== undefined) {
       this.dst = this.storage.dst;
     } else {
       this.dst = this.astroService.isDSTOn();
@@ -83,7 +83,7 @@ export class UserInputComponent implements OnInit {
     this.today = new Date();
     this.load();
     this.calculate();
-  this.search = (text$: Observable<string>) =>
+    this.search = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
       distinctUntilChanged(),
@@ -93,11 +93,11 @@ export class UserInputComponent implements OnInit {
     this.calculate();
 
   }
-  getOffset(country:string):Number {
+  getOffset(country: string): number {
     return Number(this.zones[country]);
   }
 
-  calculate() {
+  calculate(): void {
     this.whatIsToday = this.astroService.getByDateAndZone(
                                         this.datePicker.day,
                                         this.datePicker.month,
@@ -109,8 +109,8 @@ export class UserInputComponent implements OnInit {
                                         );
     this.store();
   }
-  store():void {
-    let data:DataStore = {
+  store(): void {
+    const data: DataStore = {
         country: this.country,
         day: this.datePicker.day,
         dst: this.dst,
@@ -118,10 +118,10 @@ export class UserInputComponent implements OnInit {
         minute: this.time.minute,
         month: this.datePicker.month,
         year: this.datePicker.year
-      }
+      };
     sessionStorage.setItem(USER_DATA_STORAGE, JSON.stringify(data) );
   }
-  selectToday() {
+  selectToday(): void {
     this.datePicker = this.calendar.getToday();
   }
 
