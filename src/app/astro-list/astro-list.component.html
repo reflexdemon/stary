@@ -1,5 +1,8 @@
 <ngb-datepicker #dp [(ngModel)]="model" (navigate)="date = $event.next"></ngb-datepicker>
 
+<hr>
+<button class="btn btn-sm btn-outline-primary mr-2" (click)="dp.navigateTo()">This Month</button>
+<button class="btn btn-sm btn-primary mr-2" (click)="viewList()">View List</button>
 <table class="table-hover table-responsive table-striped">
   <thead>
       <tr>
@@ -10,8 +13,6 @@
         <th>Dhasa</th>
       </tr>
   </thead>
-  <button class="btn btn-sm btn-outline-primary mr-2" (click)="dp.navigateTo()">To current month</button>
-  <button class="btn btn-sm btn-primary mr-2" (click)="viewList()">View List</button>
   <tbody>
     <tr *ngFor="let item of response">
       <td>

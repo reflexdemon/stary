@@ -15,7 +15,7 @@ export class AstroListComponent implements OnInit, OnChanges {
   constructor(private astroService: AstroServiceService, private calendar: NgbCalendar) { }
 
   ngOnInit(): void {
-    this.calendar.getToday();
+    this.model =  this.calendar.getToday();
     this.viewList();
   }
 
@@ -24,7 +24,7 @@ export class AstroListComponent implements OnInit, OnChanges {
   }
 
   viewList(): void {
-    this.response = this.astroService.getListWithTransisionsInGMT(this.date.month, this.date.year);
+    this.response = this.astroService.getListWithTransisionsInGMT(this.model.month, this.model.year);
   }
 
 
