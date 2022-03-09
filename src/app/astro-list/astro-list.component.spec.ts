@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AstroListComponent } from './astro-list.component';
 
@@ -6,7 +6,7 @@ describe('AstroListComponent', () => {
   let component: AstroListComponent;
   let fixture: ComponentFixture<AstroListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AstroListComponent ]
     })
