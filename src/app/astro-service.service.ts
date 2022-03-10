@@ -75,7 +75,17 @@ export class AstroServiceService {
     const imgDetail = this.rashiZodiac.filter(item => item.rashi === astro.rashi );
     astro.rashiImg = `assets/img/sign/${imgDetail[0].rashiImg}`;
     astro.zodiacImg = `assets/img/sign/${imgDetail[0].zodiacImg}`;
+    astro.birthTime = this.formatDigits(astro.birthTime);
     return astro;
+  }
+  formatDigits(timeString: string): string {
+    return this.pad2(timeString.split(':')[0])
+              + ':'
+              + this.pad2(timeString.split(':')[1]);
+  }
+
+  pad2(number) : string{
+     return (Number(number) < 10 ? '0' : '') + number
   }
 
   getListWithTransisionsInGMT(month: number, year: number): AstroResponse[] {
