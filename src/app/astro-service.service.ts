@@ -96,7 +96,7 @@ export class AstroServiceService {
         for (let m = 0; m <= 59; m++ ) {
           const r: AstroResponse =  this.getByDateAndZone(
                                         d, month, year, h,
-                                        m, 0, false);
+                                        m, 0, true);
           if (response.length === 0) {
             response.push(r);
           } else {
