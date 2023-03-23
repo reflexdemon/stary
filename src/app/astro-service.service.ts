@@ -5,6 +5,8 @@ import { AstroResponse } from './astro.response';
 
 @Injectable({
   providedIn: 'root'
+//  providedIn: 'any'
+//  providedIn: ngModule
 })
 export class AstroServiceService {
   // See https://github.com/Narendra-Kamath/indian-astrology
