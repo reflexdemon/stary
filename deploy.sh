@@ -7,4 +7,4 @@ git checkout main
 git pull
 
 # Deploy changes
-ng deploy --base-href=https://star.vpv.io/--cname "star.vpv.io" 
+ng deploy --base-href=https://star.vpv.io/ --cname "star.vpv.io" 
