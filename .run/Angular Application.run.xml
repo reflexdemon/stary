@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Angular Application" type="JavascriptDebugType" engineId="487cb168-c3e8-4c0c-8909-bcba26b8700d" uri="http://localhost:4200">
+  <configuration default="false" name="Angular Application" type="JavascriptDebugType" uri="http://localhost:4200" useFirstLineBreakpoints="true">
     <method v="2" />
   </configuration>
 </component>
