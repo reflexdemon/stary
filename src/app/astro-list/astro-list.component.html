@@ -1,10 +1,10 @@
 <ngb-datepicker #dp [(ngModel)]="model" (navigate)="date = $event.next"></ngb-datepicker>
 
 <hr>
-<button class="btn btn-sm btn-outline-primary mr-2" (click)="dp.navigateTo()">This Month</button>
-<button class="btn btn-sm btn-primary mr-2" (click)="viewList()">View List</button>
-<table class="table-hover table-responsive table-striped">
-  <thead>
+  <button class="btn btn-sm btn-outline-primary mr-2" (click)="dp.navigateTo()">This Month</button>
+  <button class="btn btn-sm btn-primary mr-2" (click)="viewList()">View List</button>
+  <table class="table-hover table-responsive table-striped">
+    <thead>
       <tr>
         <th>Birth Date</th>
         <th>Birth Time</th>
@@ -12,23 +12,25 @@
         <th>Nakshatra</th>
         <th>Dhasa</th>
       </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of response">
-      <td>
-        {{ item.dayOfWeek }} {{ item.birthDate }}
-      </td>      <td>
-        {{ item.birthTime }}
-      </td>      <td>
-      <img [src]="item.rashiImg" [alt]="item.rashi">
+    </thead>
+    <tbody>
+      @for (item of response; track item) {
+        <tr>
+          <td>
+            {{ item.dayOfWeek }} {{ item.birthDate }}
+          </td>      <td>
+          {{ item.birthTime }}
+        </td>      <td>
+        <img [src]="item.rashiImg" [alt]="item.rashi">
         {{ item.rashi }}
       </td>      <td>
-        {{ item.nakshatra }}
-      </td>      <td>
-        {{ item.currentDasha }}
-      </td>
-    </tr>
-  </tbody>
+      {{ item.nakshatra }}
+    </td>      <td>
+    {{ item.currentDasha }}
+  </td>
+</tr>
+}
+</tbody>
 </table>
 <!--<hr>-->
 

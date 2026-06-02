@@ -1,21 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import {NgbDateStruct, NgbInputDatepickerConfig, NgbCalendar, NgbTimeStruct} from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, inject } from '@angular/core';
+import {NgbDateStruct, NgbInputDatepickerConfig, NgbCalendar, NgbTimeStruct, NgbDatepickerModule, NgbTimepickerModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import { AstroServiceService } from '../astro-service.service';
 import { AstroResponse } from '../astro.response';
 import { DataStore } from '../data.store';
 import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
+import { AppIconsModule } from '../icons.module';
 
 const USER_DATA_STORAGE = 'USER_INPUT';
 @Component({
-  selector: 'app-user-input',
-  templateUrl: './user-input.component.html',
-  styleUrls: ['./user-input.component.scss'],
-  providers: [
-    NgbInputDatepickerConfig
-  ]
+    selector: 'app-user-input',
+    templateUrl: './user-input.component.html',
+    styleUrls: ['./user-input.component.scss'],
+    standalone: true,
+    imports: [
+        FormsModule,
+        NgbDatepickerModule,
+        NgbTimepickerModule,
+        NgbTypeaheadModule,
+        AppIconsModule
+    ],
+    providers: [
+        NgbInputDatepickerConfig
+    ]
 })
 export class UserInputComponent implements OnInit {
+  private config = inject(NgbInputDatepickerConfig);
+  private calendar = inject(NgbCalendar);
+  private astroService = inject(AstroServiceService);
   datePicker: NgbDateStruct;
   whatIsToday: AstroResponse;
   zones: any;
@@ -26,14 +39,8 @@ export class UserInputComponent implements OnInit {
   dst: boolean;
   storage: DataStore;
   offset: number;
-  constructor(private config: NgbInputDatepickerConfig,
-              private calendar: NgbCalendar,
-              private astroService: AstroServiceService) {
-
-   }
 
   load(): void {
-    // Load value from browser cache
     if (sessionStorage.getItem(USER_DATA_STORAGE)) {
       this.storage = JSON.parse(sessionStorage.getItem(USER_DATA_STORAGE)) as DataStore;
     } else {
@@ -42,7 +49,6 @@ export class UserInputComponent implements OnInit {
     if (this.storage.day
         && this.storage.month
         && this.storage.year) {
-          // We have a datePicker
           this.datePicker = {
             day: this.storage.day,
             year: this.storage.year,
@@ -78,7 +84,6 @@ export class UserInputComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    // this.selectToday();
     this.zones = this.astroService.getCountryListWithZones();
     this.today = new Date();
     this.load();
@@ -124,5 +129,4 @@ export class UserInputComponent implements OnInit {
   selectToday(): void {
     this.datePicker = this.calendar.getToday();
   }
-
 }

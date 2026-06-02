@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: true,
+    imports: [RouterModule, NgbNavModule, AsyncPipe]
 })
 export class AppComponent {
   title = 'stary';
@@ -14,5 +18,5 @@ export class AppComponent {
       { title: 'List', fragment: 'list' },
       { title: 'About', fragment: 'about' }
     ];
-  constructor(public route: ActivatedRoute) {}
+  route = inject(ActivatedRoute);
 }
