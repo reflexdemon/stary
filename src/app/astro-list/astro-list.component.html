@@ -22,7 +22,7 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
   @for (item of response; track item) {
     <div class="col">
-      <div class="card h-100" [class.today]="isToday(item)">
+      <div class="card h-100" [class.today]="isToday(item)" [class.stripe-even]="stripeClass(item) === 'stripe-even'" [class.stripe-odd]="stripeClass(item) === 'stripe-odd'">
         <div class="card-body">
           <div class="d-flex align-items-center gap-2 mb-2">
             <img [src]="item.rashiImg" [alt]="item.rashi" class="rounded" width="32" height="32">

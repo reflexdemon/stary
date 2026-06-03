@@ -92,7 +92,7 @@ export class AstroServiceService {
   }
 
   getListWithTransisionsInGMT(month: number, year: number): AstroResponse[] {
-    const response: AstroResponse[] = [] as AstroResponse[];
+    const transitions: AstroResponse[] = [] as AstroResponse[];
     const days: number = this.getNumberOfDaysInAMonth(month, year);
     for (let d = 1; d <= days; d++ ) {
       for (let h = 0; h <= 23; h++ ) {
@@ -100,19 +100,31 @@ export class AstroServiceService {
           const r: AstroResponse =  this.getByDateAndZone(
                                         d, month, year, h,
                                         m, 0, true);
-          if (response.length === 0) {
-            response.push(r);
+          if (transitions.length === 0) {
+            transitions.push(r);
           } else {
-            const prev: AstroResponse = response[response.length - 1];
+            const prev: AstroResponse = transitions[transitions.length - 1];
             if (prev.nakshatra !== r.nakshatra || prev.rashi !== r.rashi) {
-              response.push(r);
+              transitions.push(r);
             }
           }
         }
       }
     }
 
-    return response;
+    const filled: AstroResponse[] = [] as AstroResponse[];
+    let lastForDay: AstroResponse | null = null;
+    for (let d = 1; d <= days; d++) {
+      const dayStr = `${d}-${month}-${year}`;
+      const dayEntries = transitions.filter(e => e.birthDate === dayStr);
+      if (dayEntries.length > 0) {
+        filled.push(...dayEntries);
+        lastForDay = dayEntries[dayEntries.length - 1];
+      } else if (lastForDay) {
+        filled.push({ ...lastForDay, birthDate: dayStr, birthTime: '00:00' });
+      }
+    }
+    return filled;
   }
 
   getNumberOfDaysInAMonth(month: number, year: number): number {

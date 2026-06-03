@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 export class AstroListComponent implements OnInit {
   private astroService = inject(AstroServiceService);
   private today = new Date();
+  private stripeByDate = new Map<string, boolean>();
   response: AstroResponse[];
   selectedMonth: number;
   selectedYear: number;
@@ -36,7 +37,15 @@ export class AstroListComponent implements OnInit {
   }
 
   viewList(): void {
+    this.stripeByDate.clear();
     this.response = this.astroService.getListWithTransisionsInGMT(this.selectedMonth, this.selectedYear);
+  }
+
+  stripeClass(item: AstroResponse): string {
+    if (!this.stripeByDate.has(item.birthDate)) {
+      this.stripeByDate.set(item.birthDate, this.stripeByDate.size % 2 === 0);
+    }
+    return this.stripeByDate.get(item.birthDate) ? 'stripe-even' : 'stripe-odd';
   }
 
   prevMonth(): void {
