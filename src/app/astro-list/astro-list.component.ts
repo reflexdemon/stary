@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class AstroListComponent implements OnInit {
   private astroService = inject(AstroServiceService);
+  private today = new Date();
   response: AstroResponse[];
   selectedMonth: number;
   selectedYear: number;
@@ -36,5 +37,45 @@ export class AstroListComponent implements OnInit {
 
   viewList(): void {
     this.response = this.astroService.getListWithTransisionsInGMT(this.selectedMonth, this.selectedYear);
+  }
+
+  prevMonth(): void {
+    if (this.selectedMonth === 1) {
+      this.selectedMonth = 12;
+      this.selectedYear--;
+    } else {
+      this.selectedMonth--;
+    }
+    this.viewList();
+  }
+
+  nextMonth(): void {
+    if (this.selectedMonth === 12) {
+      this.selectedMonth = 1;
+      this.selectedYear++;
+    } else {
+      this.selectedMonth++;
+    }
+    this.viewList();
+  }
+
+  formatDate(item: AstroResponse): string {
+    const [d, m, y] = item.birthDate.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+  }
+
+  to12h(time: string): string {
+    const [h, m] = time.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  isToday(item: AstroResponse): boolean {
+    const todayStr = `${this.today.getDate()}-${this.today.getMonth() + 1}-${this.today.getFullYear()}`;
+    return item.birthDate === todayStr;
   }
 }
