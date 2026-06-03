@@ -14,8 +14,8 @@ export class AppComponent {
   title = 'stary';
   active = 1;
   links = [
-      { title: 'Home', fragment: 'home' },
-      { title: 'List', fragment: 'list' },
+      { title: 'Month View', fragment: 'list' },
+      { title: 'Find Birth Star', fragment: 'home' },
       { title: 'About', fragment: 'about' }
     ];
   route = inject(ActivatedRoute);

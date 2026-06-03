@@ -8,6 +8,6 @@ export const routes: Routes = [
       {path: 'home', component: UserInputComponent},
       {path: 'about', component: AboutComponent},
       {path: 'list', component: AstroListComponent},
-      {path: '', redirectTo: '/home', pathMatch: 'full'},
+      {path: '', redirectTo: '/list', pathMatch: 'full'},
     {path: '**', component: PageNotFoundComponent}
 ];
