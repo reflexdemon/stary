@@ -19,34 +19,55 @@
     <button class="btn btn-outline-secondary" (click)="nextMonth()" title="Next month">&rarr;</button>
   </div>
 </div>
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-  @for (item of response; track item) {
-    <div class="col">
-      <div class="card h-100" [class.today]="isToday(item)" [class.stripe-even]="stripeClass(item) === 'stripe-even'" [class.stripe-odd]="stripeClass(item) === 'stripe-odd'">
-        <div class="card-body">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <img [src]="item.rashiImg" [alt]="item.rashi" class="rounded" width="32" height="32">
-            <span class="fw-semibold">{{ item.rashi }}</span>
-          </div>
-          <dl class="row mb-0 small">
-            <dt class="col-4 fw-bold text-muted">Date</dt>
-            <dd class="col-8 mb-1">{{ formatDate(item) }}</dd>
-            <dt class="col-4 fw-bold text-muted">Time</dt>
-            <dd class="col-8 mb-1">{{ to12h(item.birthTime) }}</dd>
-            <dt class="col-4 fw-bold text-muted">Nakshatra</dt>
-            <dd class="col-8 mb-1">{{ item.nakshatra }}</dd>
-            <dt class="col-4 fw-bold text-muted">Chandrashtama</dt>
-            <dd class="col-8 mb-1">{{ item.chandrashtama }}</dd>
-            <dt class="col-4 fw-bold text-muted">Dhasa</dt>
-            <dd class="col-8 mb-0">{{ item.currentDasha }}</dd>
-          </dl>
+
+<div class="calendar-scroll">
+<div class="calendar">
+  <div class="calendar-header">
+    @for (name of dayNames; track name) {
+      <div class="calendar-header-cell">{{ name }}</div>
+    }
+  </div>
+  @for (week of calendar; track $index; let first = $first) {
+    <div class="calendar-week" [class.first-row]="first" [class.second-row]="$index === 1">
+      @for (cell of week; track $index; let last = $last) {
+        <div class="calendar-day" [class.today]="cell.isToday" [class.col-sat]="last">
+          @if (cell.day !== null) {
+            <div class="day-number">{{ cell.day }}</div>
+            @if (cell.entries.length > 0) {
+              <div class="day-entries">
+                @for (entry of cell.entries; track entry) {
+                  <div class="entry-wrap" [class.show-tooltip]="pressedEntry === entry" (touchstart)="onTouchStart(entry)" (touchend)="onTouchEnd()" (touchmove)="onTouchEnd()">
+                    <div class="entry" [style.background-color]="rashiColor(entry.rashi)">
+                      <span class="entry-time">{{ to12h(entry.birthTime) }}</span>
+                      <img [src]="entry.rashiImg" [alt]="entry.rashi" class="entry-rashi-icon">
+                      <span class="entry-rashi">{{ entry.rashi }}</span>
+                      <span class="entry-nak">{{ entry.nakshatra }}</span>
+                      @if (entry.chandrashtama) {
+                        <span class="entry-chandra">{{ entry.chandrashtama }}</span>
+                      }
+                    </div>
+                    <div class="entry-tooltip">
+                      <div class="tooltip-header">
+                        <img [src]="entry.rashiImg" [alt]="entry.rashi" class="tooltip-rashi-icon">
+                        <span>{{ entry.rashi }}</span>
+                        <span class="tooltip-zodiac">({{ entry.zodiacSign }})</span>
+                      </div>
+                      <table class="tooltip-details">
+                        <tr><td class="tt-label">Date</td><td class="tt-value">{{ formatDate(entry.birthDate) }}</td></tr>
+                        <tr><td class="tt-label">Time</td><td class="tt-value">{{ to12h(entry.birthTime) }}</td></tr>
+                        <tr><td class="tt-label">Nakshatra</td><td class="tt-value">{{ entry.nakshatra }}</td></tr>
+                        <tr><td class="tt-label">Chandrashtama</td><td class="tt-value">{{ entry.chandrashtama || '--' }}</td></tr>
+                        <tr><td class="tt-label">Dhasa</td><td class="tt-value">{{ entry.currentDasha }}</td></tr>
+                      </table>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
         </div>
-      </div>
+      }
     </div>
   }
 </div>
-<!--<hr>-->
-
-<!--<div class="terminal">-->
-<!--  <pre>{{response | json}}</pre>-->
-<!--</div>-->
+</div>
