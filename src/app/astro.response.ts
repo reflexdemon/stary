@@ -1,5 +1,6 @@
 export interface AstroResponse {
       rashi?: string;
+      chandrashtama?: string;
       zodiacSign?: string;
       moonAngle?: string;
       nakshatra?: string;

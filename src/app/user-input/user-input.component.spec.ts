@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AppIconsModule } from '../icons.module';
 
 import { UserInputComponent } from './user-input.component';
 
@@ -9,8 +8,7 @@ describe('UserInputComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [UserInputComponent],
-      providers: []
+      imports: [UserInputComponent]
     });
     fixture = TestBed.createComponent(UserInputComponent);
     component = fixture.componentInstance;

@@ -33,12 +33,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/indian-astrology/dist/prediction.js",
-              "node_modules/indian-astrology/dist/country-db.js",
-              "node_modules/indian-astrology/dist/index.js",
-              "node_modules/indian-astrology/dist/astro-core.js"
-            ],
+            "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,

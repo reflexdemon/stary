@@ -1,36 +1,58 @@
-<ngb-datepicker #dp [(ngModel)]="model" (navigate)="date = $event.next"></ngb-datepicker>
-
-<hr>
-  <button class="btn btn-sm btn-outline-primary mr-2" (click)="dp.navigateTo()">This Month</button>
-  <button class="btn btn-sm btn-primary mr-2" (click)="viewList()">View List</button>
-  <table class="table-hover table-responsive table-striped">
-    <thead>
+<div class="row mb-3">
+  <div class="col">
+    <select class="form-select" [(ngModel)]="selectedMonth" name="month">
+      @for (m of months; track m.value) {
+        <option [ngValue]="m.value">{{ m.label }}</option>
+      }
+    </select>
+  </div>
+  <div class="col">
+    <select class="form-select" [(ngModel)]="selectedYear" name="year">
+      @for (y of years; track y) {
+        <option [ngValue]="y">{{ y }}</option>
+      }
+    </select>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-primary" (click)="viewList()">View List</button>
+  </div>
+</div>
+<table class="table-hover table-responsive table-striped">
+  <thead>
+  <tr>
+    <th>Birth Date</th>
+    <th>Birth Time</th>
+    <th>Rashi</th>
+    <th>Nakshatra</th>
+    <th>Chandrashtama</th>
+    <th>Dhasa</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (item of response; track item) {
       <tr>
-        <th>Birth Date</th>
-        <th>Birth Time</th>
-        <th>Rashi</th>
-        <th>Nakshatra</th>
-        <th>Dhasa</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (item of response; track item) {
-        <tr>
-          <td>
-            {{ item.dayOfWeek }} {{ item.birthDate }}
-          </td>      <td>
+        <td>
+          {{ item.dayOfWeek }} {{ item.birthDate }}
+        </td>
+        <td>
           {{ item.birthTime }}
-        </td>      <td>
-        <img [src]="item.rashiImg" [alt]="item.rashi">
-        {{ item.rashi }}
-      </td>      <td>
-      {{ item.nakshatra }}
-    </td>      <td>
-    {{ item.currentDasha }}
-  </td>
-</tr>
-}
-</tbody>
+        </td>
+        <td>
+          <img [src]="item.rashiImg" [alt]="item.rashi">
+          {{ item.rashi }}
+        </td>
+        <td>
+          {{ item.nakshatra }}
+        </td>
+        <td>
+          {{ item.chandrashtama }}
+        </td>
+        <td>
+          {{ item.currentDasha }}
+        </td>
+      </tr>
+    }
+  </tbody>
 </table>
 <!--<hr>-->
 

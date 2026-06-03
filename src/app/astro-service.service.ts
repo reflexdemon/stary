@@ -11,18 +11,18 @@ import { AstroResponse } from './astro.response';
 export class AstroServiceService {
   // See https://github.com/Narendra-Kamath/indian-astrology
   rashiZodiac = [
-    {rashiImg: 'mesh.jpg', rashi: 'Mesha', zodiacSign: 'Aries', zodiacImg: 'aries.jpg' },
-    {rashiImg: 'vrishabh.jpg', rashi: 'Vrushaba', zodiacSign: 'Taurus', zodiacImg: 'taurus.jpg' },
-    {rashiImg: 'mithun.jpg', rashi: 'Mithuna', zodiacSign: 'Gemini', zodiacImg: 'gemini.jpg' },
-    {rashiImg: 'karaka.jpg', rashi: 'Kataka', zodiacSign: 'Cancer', zodiacImg: 'cancer.jpg' },
-    {rashiImg: 'simha.jpg', rashi: 'Simha', zodiacSign: 'Leo', zodiacImg: 'leo.jpg' },
-    {rashiImg: 'kanya.jpg', rashi: 'Kanya', zodiacSign: 'Virgo', zodiacImg: 'virgo.jpg' },
-    {rashiImg: 'tula.jpg', rashi: 'Tula', zodiacSign: 'Libra', zodiacImg: 'libra.jpg' },
-    {rashiImg: 'vrishchik.jpg', rashi: 'Vrushika', zodiacSign: 'Scorpio', zodiacImg: 'scorpio.jpg' },
-    {rashiImg: 'dhanu.jpg', rashi: 'Dhanu', zodiacSign: 'Sagittarius', zodiacImg: 'sagittarius.jpg' },
-    {rashiImg: 'makar.jpg', rashi: 'Makara', zodiacSign: 'Capricorn', zodiacImg: 'capricorn.jpg' },
-    {rashiImg: 'kumbh.jpg', rashi: 'Kumbha', zodiacSign: 'Aquarius', zodiacImg: '' },
-    {rashiImg: 'meen.jpg', rashi: 'Meena', zodiacSign: 'Pisces', zodiacImg: 'pisces.jpg' }
+    {rashiImg: 'mesh.jpg', rashi: 'Mesha', zodiacSign: 'Aries', zodiacImg: 'aries.jpg', chandrashtama:'Kanya' },
+    {rashiImg: 'vrishabh.jpg', rashi: 'Vrushaba', zodiacSign: 'Taurus', zodiacImg: 'taurus.jpg', chandrashtama:'Tula' },
+    {rashiImg: 'mithun.jpg', rashi: 'Mithuna', zodiacSign: 'Gemini', zodiacImg: 'gemini.jpg', chandrashtama:'Vrushika' },
+    {rashiImg: 'karaka.jpg', rashi: 'Kataka', zodiacSign: 'Cancer', zodiacImg: 'cancer.jpg', chandrashtama:'Dhanu' },
+    {rashiImg: 'simha.jpg', rashi: 'Simha', zodiacSign: 'Leo', zodiacImg: 'leo.jpg', chandrashtama:'Makara' },
+    {rashiImg: 'kanya.jpg', rashi: 'Kanya', zodiacSign: 'Virgo', zodiacImg: 'virgo.jpg', chandrashtama:'Kumbha' },
+    {rashiImg: 'tula.jpg', rashi: 'Tula', zodiacSign: 'Libra', zodiacImg: 'libra.jpg', chandrashtama:'Meena' },
+    {rashiImg: 'vrishchik.jpg', rashi: 'Vrushika', zodiacSign: 'Scorpio', zodiacImg: 'scorpio.jpg', chandrashtama:'Mesha' },
+    {rashiImg: 'dhanu.jpg', rashi: 'Dhanu', zodiacSign: 'Sagittarius', zodiacImg: 'sagittarius.jpg', chandrashtama:'Vrushaba' },
+    {rashiImg: 'makar.jpg', rashi: 'Makara', zodiacSign: 'Capricorn', zodiacImg: 'capricorn.jpg', chandrashtama:'Mithuna' },
+    {rashiImg: 'kumbh.jpg', rashi: 'Kumbha', zodiacSign: 'Aquarius', zodiacImg: '', chandrashtama:'Kataka' },
+    {rashiImg: 'meen.jpg', rashi: 'Meena', zodiacSign: 'Pisces', zodiacImg: 'pisces.jpg', chandrashtama:'Simha' }
   ];
   constructor() { }
 
@@ -76,6 +76,7 @@ export class AstroServiceService {
   parse(astro: AstroResponse): AstroResponse {
     const imgDetail = this.rashiZodiac.filter(item => item.rashi === astro.rashi );
     astro.rashiImg = `assets/img/sign/${imgDetail[0].rashiImg}`;
+    astro.chandrashtama = imgDetail[0].chandrashtama;
     astro.zodiacImg = `assets/img/sign/${imgDetail[0].zodiacImg}`;
     astro.birthTime = this.formatDigits(astro.birthTime);
     return astro;
