@@ -76,6 +76,14 @@ export class AstroListComponent implements OnInit {
     }, 500);
   }
 
+  onClick(entry: AstroResponse): void {
+    // Need to show and hide the menu in 5 seconds
+    this.pressedEntry = entry;
+    this.pressTimer = setTimeout(() => {
+      this.pressedEntry = null;
+    }, 5000);
+  }
+
   onTouchEnd(): void {
     if (this.pressTimer) {
       clearTimeout(this.pressTimer);

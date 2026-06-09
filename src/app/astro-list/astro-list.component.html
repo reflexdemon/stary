@@ -36,7 +36,7 @@
             @if (cell.entries.length > 0) {
               <div class="day-entries">
                 @for (entry of cell.entries; track entry) {
-                  <div class="entry-wrap" [class.show-tooltip]="pressedEntry === entry" (touchstart)="onTouchStart(entry)" (touchend)="onTouchEnd()" (touchmove)="onTouchEnd()">
+                  <div class="entry-wrap" [class.show-tooltip]="pressedEntry === entry" (touchstart)="onTouchStart(entry)" (touchend)="onTouchEnd()" (touchmove)="onTouchEnd()" (click)="onClick(entry)">
                     <div class="entry" [style.background-color]="rashiColor(entry.rashi)">
                       <span class="entry-time">{{ to12h(entry.birthTime) }}</span>
                       <img [src]="entry.rashiImg" [alt]="entry.rashi" class="entry-rashi-icon">
