@@ -15,11 +15,13 @@
   </div>
   <div class="col-auto d-flex gap-1">
     <button class="btn btn-outline-secondary" (click)="prevMonth()" title="Previous month">&larr;</button>
-    <button class="btn btn-primary" (click)="viewList()">View List</button>
+    <button class="btn btn-outline-primary" (click)="viewCalendar()" [class.active]="viewMode === 'calendar'">Calendar</button>
+    <button class="btn btn-outline-primary" (click)="viewList()" [class.active]="viewMode === 'list'">List</button>
     <button class="btn btn-outline-secondary" (click)="nextMonth()" title="Next month">&rarr;</button>
   </div>
 </div>
 
+@if (viewMode === 'calendar') {
 <div class="calendar-scroll">
 <div class="calendar">
   <div class="calendar-header">
@@ -38,7 +40,7 @@
                 @for (entry of cell.entries; track entry) {
                   <div class="entry-wrap" [class.show-tooltip]="pressedEntry === entry" (touchstart)="onTouchStart(entry)" (touchend)="onTouchEnd()" (touchmove)="onTouchEnd()" (click)="onClick(entry)">
                     <div class="entry" [style.background-color]="rashiColor(entry.rashi)">
-                      <span class="entry-time">{{ to12h(entry.birthTime) }}</span>
+                      <span class="entry-time">{{ entryTimeDisplay(entry) }}</span>
                       <img [src]="entry.rashiImg" [alt]="entry.rashi" class="entry-rashi-icon">
                       <span class="entry-rashi">{{ entry.rashi }}</span>
                       <span class="entry-nak">{{ entry.nakshatra }}</span>
@@ -54,7 +56,7 @@
                       </div>
                       <table class="tooltip-details">
                         <tr><td class="tt-label">Date</td><td class="tt-value">{{ formatDate(entry.birthDate) }}</td></tr>
-                        <tr><td class="tt-label">Time</td><td class="tt-value">{{ to12h(entry.birthTime) }}</td></tr>
+                        <tr><td class="tt-label">Time</td><td class="tt-value">{{ entryTimeDisplay(entry) }}</td></tr>
                         <tr><td class="tt-label">Nakshatra</td><td class="tt-value">{{ entry.nakshatra }}</td></tr>
                         <tr><td class="tt-label">Chandrashtama</td><td class="tt-value">{{ entry.chandrashtama || '--' }}</td></tr>
                         <tr><td class="tt-label">Dhasa</td><td class="tt-value">{{ entry.currentDasha }}</td></tr>
@@ -71,3 +73,36 @@
   }
 </div>
 </div>
+}
+
+@if (viewMode === 'list') {
+<div class="agenda">
+  @if (groupedEntries.length === 0) {
+    <div class="agenda-empty">No entries for this month.</div>
+  }
+  @for (group of groupedEntries; track group.date) {
+    <div class="agenda-date-header" [class.agenda-date-today]="isCurrentDate(group.date)">{{ formatDate(group.date) }}</div>
+    <div class="agenda-entries">
+      @for (entry of group.entries; track entry) {
+        <div class="agenda-entry" [class.agenda-entry-today]="isCurrentDate(group.date)" [style.border-left-color]="rashiColor(entry.rashi)">
+          <div class="agenda-entry-time">{{ entryTimeDisplay(entry) }}</div>
+          <img [src]="entry.rashiImg" [alt]="entry.rashi" class="agenda-entry-icon">
+          <div class="agenda-entry-info">
+            <div class="agenda-entry-row">
+              <span class="agenda-rashi">{{ entry.rashi }}</span>
+              <span class="agenda-zodiac">({{ entry.zodiacSign }})</span>
+              <span class="agenda-nak">{{ entry.nakshatra }}</span>
+              @if (entry.chandrashtama) {
+                <span class="entry-chandra">{{ entry.chandrashtama }}</span>
+              }
+            </div>
+            <div class="agenda-entry-row agenda-entry-sub">
+              <span>Dhasa: {{ entry.currentDasha }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+}

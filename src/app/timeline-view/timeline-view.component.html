@@ -1,0 +1,81 @@
+<div class="timeline-container">
+  <div class="timeline-nav">
+    <div class="nav-left">
+      <button class="btn btn-outline-secondary btn-sm" (click)="prevDay()" title="Previous day">&larr;</button>
+    </div>
+    <div class="nav-center">
+      <button class="btn btn-outline-primary btn-sm" (click)="goToday()">Today</button>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-outline-secondary btn-sm" (click)="nextDay()" title="Next day">&rarr;</button>
+    </div>
+  </div>
+
+  <div class="timeline-scroll"
+    #timelineBody
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()">
+
+    <div class="timeline-header">
+      @for (day of dayHeaders; track day.date; let i = $index) {
+        <div class="timeline-day-header" [class.today]="day.isToday" [ngStyle]="{ left: (i / totalDays * 100) + '%', width: (100 / totalDays) + '%' }">
+          <div class="day-name">{{ day.date.toLocaleDateString('en-US', { weekday: 'short' }) }}</div>
+          <div class="day-date">{{ day.date.getDate() }}</div>
+          <div class="day-month">{{ day.date.toLocaleDateString('en-US', { month: 'short' }) }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="timeline-body">
+      <div class="timeline-row">
+        <div class="timeline-row-label">Rashi</div>
+        <div class="timeline-track">
+          <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
+          @for (seg of rashiSegments; track seg.startMs) {
+            <div class="timeline-segment" [style.background-color]="rashiColor(seg.value)" [ngStyle]="segStyle(seg)" [title]="seg.value">
+              <span class="seg-label">{{ seg.value }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-row-label">Nakshatra</div>
+        <div class="timeline-track">
+          <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
+          @for (seg of nakSegments; track seg.startMs) {
+            <div class="timeline-segment timeline-segment-nak" [ngStyle]="segStyle(seg)" [title]="seg.value">
+              <span class="seg-label">{{ seg.value }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-row-label">Chandrashtama</div>
+        <div class="timeline-track">
+          <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
+          @for (seg of chaSegments; track seg.startMs) {
+            <div class="timeline-segment timeline-segment-cha" [ngStyle]="segStyle(seg)" [title]="seg.value">
+              <span class="seg-label">{{ seg.value }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-time-axis">
+      <div class="timeline-axis-spacer"></div>
+      <div class="timeline-time-track">
+        <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
+        @for (tick of tickMarks; track tick.ms) {
+          <div class="timeline-time-tick" [ngStyle]="{ left: ((tick.ms - rangeStartMs) / rangeMs * 100) + '%' }">
+            <span class="tick-label">{{ tick.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

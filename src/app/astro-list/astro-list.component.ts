@@ -23,6 +23,7 @@ export class AstroListComponent implements OnInit {
   pressedEntry: AstroResponse | null = null;
   response: AstroResponse[];
   selectedMonth: number;
+  viewMode: 'calendar' | 'list' = (localStorage.getItem('astroViewMode') as 'calendar' | 'list') || 'list';
   selectedYear: number;
   dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   calendar: CalendarCell[][] = [];
@@ -42,11 +43,19 @@ export class AstroListComponent implements OnInit {
     for (let y = currentYear - 50; y <= currentYear + 50; y++) {
       this.years.push(y);
     }
-    this.viewList();
+    this.loadCurrentView();
   }
 
   viewList(): void {
-    this.response = this.astroService.getListWithTransisionsInGMT(this.selectedMonth, this.selectedYear);
+    this.viewMode = 'list';
+    localStorage.setItem('astroViewMode', 'list');
+    this.response = this.astroService.getListWithTransisionsInIST(this.selectedMonth, this.selectedYear);
+  }
+
+  viewCalendar(): void {
+    this.viewMode = 'calendar';
+    localStorage.setItem('astroViewMode', 'calendar');
+    this.response = this.astroService.getListWithTransisionsInIST(this.selectedMonth, this.selectedYear);
     this.buildCalendar();
   }
 
@@ -57,7 +66,7 @@ export class AstroListComponent implements OnInit {
     } else {
       this.selectedMonth--;
     }
-    this.viewList();
+    this.loadCurrentView();
   }
 
   nextMonth(): void {
@@ -67,7 +76,15 @@ export class AstroListComponent implements OnInit {
     } else {
       this.selectedMonth++;
     }
-    this.viewList();
+    this.loadCurrentView();
+  }
+
+  private loadCurrentView(): void {
+    if (this.viewMode === 'calendar') {
+      this.viewCalendar();
+    } else {
+      this.viewList();
+    }
   }
 
   onTouchStart(entry: AstroResponse): void {
@@ -92,6 +109,12 @@ export class AstroListComponent implements OnInit {
     this.pressedEntry = null;
   }
 
+  isCurrentDate(dateStr: string): boolean {
+    const t = this.today;
+    const [d, m, y] = dateStr.split('-').map(Number);
+    return d === t.getDate() && m === t.getMonth() + 1 && y === t.getFullYear();
+  }
+
   formatDate(dateStr: string): string {
     const [d, m, y] = dateStr.split('-').map(Number);
     return new Date(y, m - 1, d).toLocaleDateString('en-US', {
@@ -109,11 +132,64 @@ export class AstroListComponent implements OnInit {
     return colors[rashi] || '#f8f9fa';
   }
 
+  private localDateStr(entry: AstroResponse): string {
+    const local = this.istDateToLocal(entry.birthDate!, entry.birthTime!);
+    return `${local.getDate()}-${local.getMonth() + 1}-${local.getFullYear()}`;
+  }
+
+  private istDateToLocal(dateStr: string, timeStr: string): Date {
+    const [d, m, y] = dateStr.split('-').map(Number);
+    const [h, min] = timeStr.split(':').map(Number);
+    const utcMs = Date.UTC(y, m - 1, d, h, min);
+    return new Date(utcMs - 5.5 * 3600 * 1000);
+  }
+
+  private isIstBrowser(): boolean {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone === 'Asia/Kolkata';
+    } catch {
+      return false;
+    }
+  }
+
+  entryTimeDisplay(entry: AstroResponse): string {
+    const istTime = this.to12h(entry.birthTime!);
+    if (this.isIstBrowser()) {
+      return istTime;
+    }
+    const local = this.istDateToLocal(entry.birthDate!, entry.birthTime!);
+    const localTime = local.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const [ld, lm, ly] = entry.birthDate!.split('-').map(Number);
+    const istDate = new Date(ly, lm - 1, ld);
+    const istLabel = `${istTime} IST`;
+    if (local.toDateString() !== istDate.toDateString()) {
+      const istDateLabel = istDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return `${localTime} (${istTime} IST ${istDateLabel})`;
+    }
+    return `${localTime} (${istLabel})`;
+  }
+
   to12h(time: string): string {
     const [h, m] = time.split(':').map(Number);
     const ampm = h >= 12 ? 'PM' : 'AM';
     const h12 = h % 12 || 12;
     return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  get groupedEntries(): { date: string; entries: AstroResponse[] }[] {
+    const map = new Map<string, AstroResponse[]>();
+    for (const item of this.response || []) {
+      const key = this.localDateStr(item);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(item);
+    }
+    return Array.from(map.entries())
+      .sort(([a], [b]) => {
+        const [da, ma, ya] = a.split('-').map(Number);
+        const [db, mb, yb] = b.split('-').map(Number);
+        return new Date(ya, ma - 1, da).getTime() - new Date(yb, mb - 1, db).getTime();
+      })
+      .map(([date, entries]) => ({ date, entries }));
   }
 
   private buildCalendar(): void {
@@ -122,7 +198,7 @@ export class AstroListComponent implements OnInit {
 
     const byDate = new Map<string, AstroResponse[]>();
     for (const item of this.response || []) {
-      const key = item.birthDate;
+      const key = this.localDateStr(item);
       if (!byDate.has(key)) byDate.set(key, []);
       byDate.get(key)!.push(item);
     }

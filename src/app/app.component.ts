@@ -14,6 +14,7 @@ export class AppComponent {
   title = 'stary';
   active = 1;
   links = [
+      { title: 'Timeline', fragment: 'timeline' },
       { title: 'Month View', fragment: 'list' },
       { title: 'Find Birth Star', fragment: 'home' },
       { title: 'About', fragment: 'about' }

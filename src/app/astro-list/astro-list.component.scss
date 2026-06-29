@@ -188,6 +188,9 @@
 .entry-rashi {
   font-weight: 500;
   color: #212529;
+  background: #d4edda;
+  padding: 0.0625rem 0.1875rem;
+  border-radius: 0.125rem;
   flex-shrink: 0;
 }
 
@@ -202,12 +205,12 @@
 .entry-chandra {
   margin-left: auto;
   font-weight: 500;
-  color: #198754;
+  color: #842029;
   flex-shrink: 0;
   font-size: 0.55rem;
   padding: 0.0625rem 0.1875rem;
   border-radius: 0.125rem;
-  background: #e8f5e9;
+  background: #f8d7da;
 }
 
 @media (max-width: 768px) {
@@ -284,4 +287,114 @@
   color: white;
   padding: 0 1rem 1rem;
   margin: 0;
+}
+
+.agenda {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.agenda-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.agenda-date-header {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #212529;
+  padding: 0.75rem 0.5rem 0.375rem;
+  border-bottom: 2px solid #dee2e6;
+  margin-top: 0.5rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &.agenda-date-today {
+    color: #0d6efd;
+    border-bottom-color: #0d6efd;
+  }
+}
+
+.agenda-entries {
+  display: flex;
+  flex-direction: column;
+}
+
+.agenda-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  border-left: 4px solid #dee2e6;
+  margin: 0.125rem 0;
+  background: #f8f9fa;
+  border-radius: 0.25rem;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #e9ecef;
+  }
+
+  &.agenda-entry-today {
+    background: #f0f7ff;
+    box-shadow: inset 0 0 0 2px #0d6efd;
+  }
+}
+
+.agenda-entry-time {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #0d6efd;
+  flex-shrink: 0;
+  min-width: 4.5rem;
+}
+
+.agenda-entry-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.agenda-entry-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.agenda-entry-row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.agenda-entry-sub {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.125rem;
+}
+
+.agenda-rashi {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #212529;
+}
+
+.agenda-zodiac {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.agenda-nak {
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.active.btn-outline-primary {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
 }
