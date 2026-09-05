@@ -3,8 +3,13 @@
     <div class="nav-left">
       <button class="btn btn-outline-secondary btn-sm" (click)="prevDay()" title="Previous day">&larr;</button>
     </div>
-    <div class="nav-center">
+    <div class="nav-center d-flex align-items-center gap-2">
       <button class="btn btn-outline-primary btn-sm" (click)="goToday()">Today</button>
+      <select class="form-select form-select-sm timezone-select" [(ngModel)]="selectedTzOffset" (change)="onTzChange()">
+        @for (tz of timezones; track tz.label) {
+          <option [value]="tz.offset">{{ tz.label }}</option>
+        }
+      </select>
     </div>
     <div class="nav-right">
       <button class="btn btn-outline-secondary btn-sm" (click)="nextDay()" title="Next day">&rarr;</button>
@@ -28,13 +33,27 @@
       }
     </div>
 
+    @if (activeTooltip) {
+      <div class="timeline-tooltip-popover shadow-sm" [style.left.px]="activeTooltip.left" [style.top.px]="activeTooltip.top">
+        <strong>{{ activeTooltip.label }}</strong>
+        <div class="tooltip-time-range">
+          {{ activeTooltip.startStr }} &rarr; {{ activeTooltip.endStr }} <span class="badge bg-primary ms-1">{{ activeTooltip.tzCode }}</span>
+        </div>
+      </div>
+    }
+
     <div class="timeline-body">
       <div class="timeline-row">
         <div class="timeline-row-label">Rashi</div>
         <div class="timeline-track">
           <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
           @for (seg of rashiSegments; track seg.startMs) {
-            <div class="timeline-segment" [style.background-color]="rashiColor(seg.value)" [ngStyle]="segStyle(seg)" [title]="seg.value">
+            <div class="timeline-segment"
+              [style.background-color]="rashiColor(seg.value)"
+              [ngStyle]="segStyle(seg)"
+              (mouseenter)="showTooltip($event, seg)"
+              (mouseleave)="hideTooltip()"
+              (touchstart)="showTooltip($event, seg)">
               <span class="seg-label">{{ seg.value }}</span>
             </div>
           }
@@ -46,7 +65,11 @@
         <div class="timeline-track">
           <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
           @for (seg of nakSegments; track seg.startMs) {
-            <div class="timeline-segment timeline-segment-nak" [ngStyle]="segStyle(seg)" [title]="seg.value">
+            <div class="timeline-segment timeline-segment-nak"
+              [ngStyle]="segStyle(seg)"
+              (mouseenter)="showTooltip($event, seg)"
+              (mouseleave)="hideTooltip()"
+              (touchstart)="showTooltip($event, seg)">
               <span class="seg-label">{{ seg.value }}</span>
             </div>
           }
@@ -58,7 +81,11 @@
         <div class="timeline-track">
           <div class="timeline-now-line" [style.left.%]="nowPercent"></div>
           @for (seg of chaSegments; track seg.startMs) {
-            <div class="timeline-segment timeline-segment-cha" [ngStyle]="segStyle(seg)" [title]="seg.value">
+            <div class="timeline-segment timeline-segment-cha"
+              [ngStyle]="segStyle(seg)"
+              (mouseenter)="showTooltip($event, seg)"
+              (mouseleave)="hideTooltip()"
+              (touchstart)="showTooltip($event, seg)">
               <span class="seg-label">{{ seg.value }}</span>
             </div>
           }

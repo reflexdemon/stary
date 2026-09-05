@@ -116,7 +116,7 @@ export class AstroServiceService {
     astro.chandrashtama = imgDetail[0].chandrashtama;
     astro.zodiacImg = `assets/img/sign/${imgDetail[0].zodiacImg}`;
     const [h, m] = astro.birthTime!.split(':').map(Number);
-    let total = h * 60 + m + (2 * 60 + 22);
+    let total = h * 60 + m + 13;
     const daysToAdd = Math.floor(total / (24 * 60));
     total = total % (24 * 60);
     astro.birthTime = this.formatDigits(`${Math.floor(total / 60)}:${total % 60}`);
