@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import {NgbDateStruct, NgbInputDatepickerConfig, NgbCalendar, NgbTimeStruct, NgbDatepickerModule, NgbTimepickerModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
-import { AstroServiceService } from '../astro-service.service';
+import { AstroServiceService, DEFAULT_TZ_OFFSET } from '../astro-service.service';
 import { AstroResponse } from '../astro.response';
 import { DataStore } from '../data.store';
 import { Observable } from 'rxjs';
@@ -30,15 +30,17 @@ export class UserInputComponent implements OnInit {
   private calendar = inject(NgbCalendar);
   private astroService = inject(AstroServiceService);
   datePicker: NgbDateStruct;
-  whatIsToday: AstroResponse;
+  whatIsToday: AstroResponse = {};
   zones: any;
   today: Date;
   time = {hour: 13, minute: 30} as NgbTimeStruct;
-  country: any;
+  // Default country is India (IST +5.5)
+  country: any = 'India';
   search: any;
-  dst: boolean;
+  dst: boolean = false;
   storage: DataStore;
-  offset: number;
+  offset: number = DEFAULT_TZ_OFFSET;
+  calculating = false;
 
   load(): void {
     if (sessionStorage.getItem(USER_DATA_STORAGE)) {
@@ -71,15 +73,18 @@ export class UserInputComponent implements OnInit {
       } as NgbTimeStruct;
     }
     if (this.storage.country) {
+      this.country = this.storage.country;
       this.offset = this.getOffset(this.storage.country);
     } else {
-      this.offset = (this.today.getTimezoneOffset() / 60);
+      // Default: India / IST
+      this.country = 'India';
+      this.offset = DEFAULT_TZ_OFFSET;
     }
 
     if (this.storage.dst !== undefined) {
       this.dst = this.storage.dst;
     } else {
-      this.dst = this.astroService.isDSTOn();
+      this.dst = false; // India does not observe DST
     }
 
   }
@@ -87,7 +92,6 @@ export class UserInputComponent implements OnInit {
     this.zones = this.astroService.getCountryListWithZones();
     this.today = new Date();
     this.load();
-    this.calculate();
     this.search = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
@@ -103,16 +107,23 @@ export class UserInputComponent implements OnInit {
   }
 
   calculate(): void {
-    this.whatIsToday = this.astroService.getByDateAndZone(
-                                        this.datePicker.day,
-                                        this.datePicker.month,
-                                        this.datePicker.year,
-                                        this.time.hour,
-                                        this.time.minute,
-                                        this.getOffset(this.country),
-                                        this.dst
-                                        );
-    this.store();
+    this.calculating = true;
+    this.astroService.getByDateAndZone(
+      this.datePicker.day,
+      this.datePicker.month,
+      this.datePicker.year,
+      this.time.hour,
+      this.time.minute,
+      this.getOffset(this.country),
+      this.dst
+    ).then(result => {
+      this.whatIsToday = result;
+      this.store();
+    }).catch(err => {
+      console.error('Astro calculation error:', err);
+    }).finally(() => {
+      this.calculating = false;
+    });
   }
   store(): void {
     const data: DataStore = {

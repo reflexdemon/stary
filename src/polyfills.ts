@@ -55,3 +55,17 @@ import 'zone.js';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+if (typeof window !== 'undefined' && window.fetch) {
+  const origFetch = window.fetch;
+  (window as any).fetch = function(input: any, init: any) {
+    if (typeof input === 'string' && input.includes('swisseph.wasm')) {
+      if ((window as any).__karma__) {
+        return origFetch.call(this, '/base/node_modules/@swisseph/browser/dist/swisseph.wasm', init);
+      }
+      return origFetch.call(this, '/swisseph.wasm', init);
+    }
+    return origFetch.apply(this, [input, init] as any);
+  };
+}
+

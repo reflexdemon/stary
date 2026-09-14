@@ -8,7 +8,8 @@
     "deploy": "ng deploy --base-href=https://star.vpv.io/ --cname=star.vpv.io",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "node scripts/patch-vpv.js"
   },
   "private": true,
   "dependencies": {
@@ -24,10 +25,10 @@
     "@ng-bootstrap/ng-bootstrap": "^20.0.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8",
-    "indian-astrology": "^1.0.4",
     "ngx-bootstrap-icons": "^1.9.3",
     "rxjs": "^7.8.2",
     "tslib": "^2.8.0",
+    "vpv-panchangam": "^0.4.0",
     "zone.js": "~0.15.1"
   },
   "devDependencies": {

@@ -21,7 +21,8 @@ export class AstroListComponent implements OnInit {
   private today = new Date();
   private pressTimer: any = null;
   pressedEntry: AstroResponse | null = null;
-  response: AstroResponse[];
+  response: AstroResponse[] = [];
+  loading = false;
   selectedMonth: number;
   viewMode: 'calendar' | 'list' = (localStorage.getItem('astroViewMode') as 'calendar' | 'list') || 'list';
   selectedYear: number;
@@ -49,14 +50,24 @@ export class AstroListComponent implements OnInit {
   viewList(): void {
     this.viewMode = 'list';
     localStorage.setItem('astroViewMode', 'list');
-    this.response = this.astroService.getListWithTransisionsInIST(this.selectedMonth, this.selectedYear);
+    this.loading = true;
+    this.astroService.getListWithTransisionsInIST(this.selectedMonth, this.selectedYear)
+      .then(result => { this.response = result; })
+      .catch(err => console.error('List error:', err))
+      .finally(() => { this.loading = false; });
   }
 
   viewCalendar(): void {
     this.viewMode = 'calendar';
     localStorage.setItem('astroViewMode', 'calendar');
-    this.response = this.astroService.getListWithTransisionsInIST(this.selectedMonth, this.selectedYear);
-    this.buildCalendar();
+    this.loading = true;
+    this.astroService.getListWithTransisionsInIST(this.selectedMonth, this.selectedYear)
+      .then(result => {
+        this.response = result;
+        this.buildCalendar();
+      })
+      .catch(err => console.error('Calendar error:', err))
+      .finally(() => { this.loading = false; });
   }
 
   prevMonth(): void {

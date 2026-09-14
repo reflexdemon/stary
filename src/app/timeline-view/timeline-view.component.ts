@@ -67,6 +67,7 @@ export class TimelineViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   dayHeaders: { date: Date; isToday: boolean }[] = [];
   totalDays = 15;
+  loading = false;
 
   nowMs = Date.now();
 
@@ -249,20 +250,7 @@ export class TimelineViewComponent implements OnInit, AfterViewInit, OnDestroy {
       endIST.getUTCHours(), endIST.getUTCMinutes()
     );
 
-    const raw = this.astroService.getTransitionsInRange(startDate, endDate, 30);
-    const points: RawPoint[] = raw.map(t => {
-      const [td, tm, ty] = t.birthDate!.split('-').map(Number);
-      const [th, tmin] = t.birthTime!.split(':').map(Number);
-      const ms = Date.UTC(ty, tm - 1, td, th, tmin) - (5.5 * 3600 * 1000);
-      return {
-        ms,
-        rashi: t.rashi!,
-        nakshatra: t.nakshatra!,
-        chandrashtama: t.chandrashtama!,
-        rashiImg: t.rashiImg!,
-      };
-    }).sort((a, b) => a.ms - b.ms);
-
+    // Build day headers synchronously
     this.dayHeaders = [];
     const nowInTz = new Date(Date.now() + tzOffsetMs);
     for (let i = 0; i < this.totalDays; i++) {
@@ -272,16 +260,11 @@ export class TimelineViewComponent implements OnInit, AfterViewInit, OnDestroy {
         nowInTz.getUTCFullYear() === dInTz.getUTCFullYear() &&
         nowInTz.getUTCMonth() === dInTz.getUTCMonth() &&
         nowInTz.getUTCDate() === dInTz.getUTCDate();
-
       this.dayHeaders.push({
         date: new Date(dInTz.getUTCFullYear(), dInTz.getUTCMonth(), dInTz.getUTCDate()),
         isToday,
       });
     }
-
-    this.rashiSegments = this.buildRowSegments(points, p => p.rashi, p => p.rashiImg, p => p.rashi);
-    this.nakSegments = this.buildRowSegments(points, p => p.nakshatra, () => undefined, p => p.nakshatra);
-    this.chaSegments = this.buildRowSegments(points, p => p.chandrashtama, () => undefined, p => p.chandrashtama);
 
     this.tickMarks = [];
     const tickInterval = 6 * 3600 * 1000;
@@ -290,6 +273,30 @@ export class TimelineViewComponent implements OnInit, AfterViewInit, OnDestroy {
       const label = `${tickTz.getUTCHours().toString().padStart(2, '0')}:${tickTz.getUTCMinutes().toString().padStart(2, '0')}`;
       this.tickMarks.push({ ms: t, label });
     }
+
+    // Fetch transitions asynchronously
+    this.loading = true;
+    this.astroService.getTransitionsInRange(startDate, endDate, 30)
+      .then(raw => {
+        const points: RawPoint[] = raw.map(t => {
+          const [td, tm, ty] = t.birthDate!.split('-').map(Number);
+          const [th, tmin] = t.birthTime!.split(':').map(Number);
+          const ms = Date.UTC(ty, tm - 1, td, th, tmin) - (5.5 * 3600 * 1000);
+          return {
+            ms,
+            rashi: t.rashi!,
+            nakshatra: t.nakshatra!,
+            chandrashtama: t.chandrashtama!,
+            rashiImg: t.rashiImg!,
+          };
+        }).sort((a, b) => a.ms - b.ms);
+
+        this.rashiSegments = this.buildRowSegments(points, p => p.rashi, p => p.rashiImg, p => p.rashi);
+        this.nakSegments = this.buildRowSegments(points, p => p.nakshatra, () => undefined, p => p.nakshatra);
+        this.chaSegments = this.buildRowSegments(points, p => p.chandrashtama, () => undefined, p => p.chandrashtama);
+      })
+      .catch(err => console.error('Timeline error:', err))
+      .finally(() => { this.loading = false; });
   }
 
   private buildRowSegments(
