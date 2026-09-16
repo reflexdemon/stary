@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "deploy": "ng deploy --base-href=https://star.vpv.io/ --cname=star.vpv.io",
+    "deploy:nobuild": "ng deploy --no-build --base-href=https://star.vpv.io/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

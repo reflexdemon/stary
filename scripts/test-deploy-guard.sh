@@ -145,6 +145,25 @@ case_8_differing_marker_deploys() {
   fi
 }
 
+case_9_no_build_deploy_omits_cname() {
+  local marker cmd_line
+  marker="$TMP_ROOT/marker-cname.txt"
+  printf 'dddddddddddddddd' > "$marker"
+  GUARD_LOCAL_HASH='eeeeeeeeeeeeeeee'
+  GUARD_DEPLOYED_HASH_URL="file://$marker"
+  GUARD_SKIP_DEPLOY=1
+  run_raw deploy_guard_main
+  cmd_line="$(printf '%s' "$GLOBAL_OUT" | grep 'would run:')"
+  if [ "$GLOBAL_RC" -eq 0 ] \
+     && printf '%s' "$GLOBAL_OUT" | grep -q 'DEPLOY:' \
+     && printf '%s' "$cmd_line" | grep -q 'npm run deploy:nobuild' \
+     && ! printf '%s' "$cmd_line" | grep -qi 'cname'; then
+    record 0 "9 no-build deploy command omits --cname"
+  else
+    record 1 "9 no-build deploy command omits --cname" "rc=$GLOBAL_RC out=$GLOBAL_OUT cmd=$cmd_line"
+  fi
+}
+
 case_1_skip_on_equal_hashes
 case_2_deploy_on_differing_hashes
 case_3_deploy_on_empty_deployed_side
@@ -153,6 +172,7 @@ case_5_abort_on_malformed_local_hash
 case_6_skip_when_deployed_marker_matches
 case_7_network_failure_deploys
 case_8_differing_marker_deploys
+case_9_no_build_deploy_omits_cname
 
 printf '\nsummary: %d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

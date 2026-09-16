@@ -20,7 +20,8 @@
 #   GUARD_LOCAL_HASH        bypass the production build with a literal hash
 #   GUARD_DEPLOYED_HASH_URL override the marker URL (file:// or http(s))
 #   GUARD_SKIP_DEPLOY=1     print the would-run deploy command and stop before
-#                           `npm run deploy -- --no-build`
+#                           `npm run deploy:nobuild` (no-build deploy that omits
+#                           --cname, so a skipped build never rewrites the CNAME)
 #
 # Decisions never err toward a skip:
 #   - marker absent (HTTP 404)              -> DEPLOY (bootstraps the marker)
@@ -201,11 +202,11 @@ deploy_guard_main() {
   fi
   printf 'DEPLOY: %s\n' "$(dg_deploy_reason)"
   if [ "${GUARD_SKIP_DEPLOY:-0}" = "1" ]; then
-    printf '(GUARD_SKIP_DEPLOY=1) would run: npm run deploy -- --no-build\n'
+    printf '(GUARD_SKIP_DEPLOY=1) would run: npm run deploy:nobuild\n'
     return 0
   fi
   printf '%s' "$DG_LOCAL_HASH" > "$GSD_REPO_ROOT/dist/stary/build-hash.txt"
-  npm run deploy -- --no-build
+  npm run deploy:nobuild
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
