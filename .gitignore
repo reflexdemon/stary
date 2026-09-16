@@ -49,3 +49,6 @@ Thumbs.db
 # IDEA Files
 *.iml
 .idea/
+
+# AI
+.planning/
