@@ -172,13 +172,30 @@ snippet and does not resolve, so the link uses the real name.
 |---|---|---|
 | `user-input.component.html` | `Day light Savings?` | `Daylight saving time?` |
 | `user-input.component.html` | `Birth Star is X and Rashi is Y` | `Nakshatra is X and Moon sign is Y` |
-| `astro-service.service.ts` | `rashi: 'Kataka'` | `rashi: 'Karka'` |
 
-The `Kataka` -> `Karka` rename is a coordinated data change, not a standalone string edit.
-`RASHI_NAME_MAP` maps the library's `Karka` back to the legacy label `Kataka`, and
-`RASHI_PREDICTIONS` is keyed by that same label. All three move together: the `RASHI_ZODIAC`
-entry, the `RASHI_NAME_MAP` entry, and the `RASHI_PREDICTIONS` key. Changing only the label
-would break the Cancer prediction lookup and the result-card title.
+### Rashi naming: explicitly not changed
+
+The Cancer label reads `Kataka` while `vpv-panchangam` returns `Karka`. An earlier draft of
+this spec proposed normalising the label to `Karka`. **That is dropped**, for three reasons.
+
+It is not a spelling error. "Kataka" is a legitimate South-Indian transliteration of
+कर्क, arguably more common in Tamil panchangam than "Karka". Changing it is a
+normalisation decision, not a typo fix.
+
+The blast radius is 7 locations across 5 files: `RASHI_ZODIAC` (both the Cancer label and
+Aquarius's `chandrashtama` value), `RASHI_NAME_MAP`, the `RASHI_PREDICTIONS` key and its
+copy, the `rashiColor()` maps in both `timeline-view.component.ts` and
+`astro-list.component.ts`, and the assertion in `astro-service.service.spec.ts`.
+
+Two of those are silent-failure hazards. Both `rashiColor()` maps end in
+`colors[rashi] || '#f8f9fa'`, so a missed key does not throw -- Cancer would render
+near-invisible light grey in the timeline and month view with no error in the console.
+
+There is also no user-visible benefit: both spellings mean Cancer, and no user reads the raw
+Sanskrit label and finds it wrong.
+
+If this normalisation is wanted later, it belongs in its own change with regression tests
+around the colour lookup.
 
 ## Testing
 
