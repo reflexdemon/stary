@@ -440,8 +440,12 @@ Expected: `TOTAL: 23 SUCCESS`, zero FAILED, and a clean build.
 Then confirm scope discipline:
 
 ```bash
-git diff --stat 41156e9..HEAD
+git diff --stat 9d0d5cb..HEAD
 ```
+
+`9d0d5cb` is the plan commit and is the last commit before implementation began. Starting
+the range any earlier would pull the plan and spec files into the diff and contradict the
+expected list below.
 
 Expected modified files, and no others:
 
