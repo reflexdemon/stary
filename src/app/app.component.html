@@ -8,6 +8,11 @@
     }
   </ul>
 
-  <h1>Displays the Birth Star</h1>
+  @if (route.fragment | async; as fragment) {
+    @if (pageFor(fragment); as page) {
+      <h1>{{ page.heading }}</h1>
+      <p class="page-overview">{{ page.overview }}</p>
+    }
+  }
   <router-outlet></router-outlet>
 </div>
