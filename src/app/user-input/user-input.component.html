@@ -21,7 +21,7 @@
   <input placeholder="Select Country/Time Zone" type="text" class="form-control" [(ngModel)]="country" [ngbTypeahead]="search"/>
 </div>
 <label class="btn-secondary" ngbButtonLabel>
-  <input type="checkbox" [(ngModel)]="dst"  ngbButton> Day light Savings?
+  <input type="checkbox" [(ngModel)]="dst"  ngbButton> Daylight saving time?
 </label>
 <hr/>
 <button class="btn btn-primary"
@@ -48,7 +48,7 @@ Model: {{ datePicker | json }}
     <div class="card-body">
       <h5 class="card-title">{{whatIsToday.rashi}}</h5>
       <p class="card-text">
-        Birth Star is  <strong>{{whatIsToday.nakshatra}}</strong> and Rashi is <strong>{{whatIsToday.rashi}}</strong>
+        Nakshatra is <strong>{{whatIsToday.nakshatra}}</strong> and Moon sign is <strong>{{whatIsToday.rashi}}</strong>
       </p>
       <h3>Something About {{whatIsToday.rashi}}</h3>
       <p class="card-text">
