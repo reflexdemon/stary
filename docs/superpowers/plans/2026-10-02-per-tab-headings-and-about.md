@@ -12,7 +12,7 @@
 
 - Copy strings are **exact and final**. Do not reword, re-wrap, or "improve" them. They were reviewed and approved.
 - The Astro component's spellings must be preserved: **Rashi**, **Nakshatra**, **Chandrashtama**, **Pancha(n)gam**, **Panchang**, **Drik Panchang**, **Kundali**, **Gowri Panchangam**, **Ashtakavarga**, **Vimshottari Dasha**, **WebAssembly**.
-- **Do not rename `Kataka` to `Karka`.** The Cancer rashi label stays `Kataka` in all 7 of its locations. This is explicitly out of scope; see the spec's "Rashi naming: explicitly not changed" section.
+- **Do not rename `Kataka` to `Karka`.** The Cancer rashi label stays `Kataka` in all 8 of its locations across 5 files. This is explicitly out of scope; see the spec's "Rashi naming: explicitly not changed" section. (`Karka` does legitimately appear twice in `astro-service.service.ts` as the vpv-panchangam library's own name that `RASHI_NAME_MAP` translates *to* `Kataka`; leave both alone.)
 - Do not touch `src/app/app-routing.module.ts`. Routes are unchanged.
 - Do not add new dependencies or components.
 - Test command is `npx ng test --watch=false --browsers=ChromeHeadless`. Plain `npm test` watches forever and never exits — do not use it for verification.
@@ -344,7 +344,7 @@ Replace the entire file with:
 </p>
 ```
 
-Corrections applied, for review: `passonate` → `passionate`, `createion` → `creation`, "my twitter handle" → "my Twitter handle", "my github repo" → "my GitHub repository", and the stale "Angular 10" claim replaced with a version-free sentence (the project is on Angular 21).
+Corrections applied, for review: `passonate` → `passionate`, the `createion` clause rewritten in full to "a simple side project to learn Angular and to play around with the vpv-panchangam library" (the word "creation" does not survive in the final copy), "my twitter handle" → "my Twitter handle", "my github repo" → "my GitHub repository", and the stale "Angular 10" claim replaced with a version-free sentence (the project is on Angular 21).
 
 The npm package name is `vpv-panchangam`. The name `vedic-panchanga` appears only in the dependency README's install snippet and does not resolve on npm.
 
@@ -440,12 +440,12 @@ Expected: `TOTAL: 23 SUCCESS`, zero FAILED, and a clean build.
 Then confirm scope discipline:
 
 ```bash
-git diff --stat 9d0d5cb..HEAD
+git diff --stat 925349b..HEAD
 ```
 
-`9d0d5cb` is the plan commit and is the last commit before implementation began. Starting
-the range any earlier would pull the plan and spec files into the diff and contradict the
-expected list below.
+`925349b` is the last commit before implementation began (it only corrected the scope-check
+range in this file). Starting the range any earlier — for example at `9d0d5cb`, the plan
+commit — pulls this plan file itself into the diff and contradicts the expected list below.
 
 Expected modified files, and no others:
 

@@ -182,10 +182,15 @@ It is not a spelling error. "Kataka" is a legitimate South-Indian transliteratio
 कर्क, arguably more common in Tamil panchangam than "Karka". Changing it is a
 normalisation decision, not a typo fix.
 
-The blast radius is 7 locations across 5 files: `RASHI_ZODIAC` (both the Cancer label and
+The blast radius is 8 locations across 5 files: `RASHI_ZODIAC` (both the Cancer label and
 Aquarius's `chandrashtama` value), `RASHI_NAME_MAP`, the `RASHI_PREDICTIONS` key and its
 copy, the `rashiColor()` maps in both `timeline-view.component.ts` and
 `astro-list.component.ts`, and the assertion in `astro-service.service.spec.ts`.
+
+Note that `Karka` legitimately appears twice in `astro-service.service.ts` — as the
+`RASHI_NAME_MAP` key and in a doc comment. That is the vpv-panchangam library's own
+Sanskrit name for Cancer, which the map translates *to* the display name `Kataka`. Those
+two occurrences are correct and must not be "corrected" to `Kataka`.
 
 Two of those are silent-failure hazards. Both `rashiColor()` maps end in
 `colors[rashi] || '#f8f9fa'`, so a missed key does not throw -- Cancer would render
