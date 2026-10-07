@@ -65,8 +65,8 @@ describe('AppComponent heading', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelector('h1')?.textContent?.trim()).toBe('Timeline');
-    expect(el.querySelector('p.page-overview')?.textContent?.trim()).toBe(
+    expect(el.querySelector('.container h1')?.textContent?.trim()).toBe('Timeline');
+    expect(el.querySelector('.container p.page-overview')?.textContent?.trim()).toBe(
       "Follow the Moon's transit through every Rashi (moon sign), Nakshatra and Chandrashtama across a rolling 15-day window, with times shown in the time zone of your choice."
     );
   });
@@ -77,8 +77,8 @@ describe('AppComponent heading', () => {
     fragment$.next('about');
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelector('h1')?.textContent?.trim()).toBe('About');
-    expect(el.querySelector('p.page-overview')?.textContent?.trim()).toBe(
+    expect(el.querySelector('.container h1')?.textContent?.trim()).toBe('About');
+    expect(el.querySelector('.container p.page-overview')?.textContent?.trim()).toBe(
       'What Stary is, who built it, and the vpv-panchangam API that powers every calculation.'
     );
   });
@@ -88,14 +88,17 @@ describe('AppComponent heading', () => {
     fragment$.next('does-not-exist');
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelector('h1')).toBeNull();
-    expect(el.querySelector('p.page-overview')).toBeNull();
+    expect(el.querySelector('.container h1')).toBeNull();
+    expect(el.querySelector('.container p.page-overview')).toBeNull();
+    // PageNotFoundComponent supplies its own <h2>Page Not Found</h2>. The shell must never
+    // add a heading of its own for an unmatched route, or the two would both render.
+    expect(el.querySelector('.container h2')).toBeNull();
   });
 
   it('still renders all four nav tabs', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelectorAll('ul.nav-tabs li').length).toBe(4);
+    expect(el.querySelectorAll('.container ul.nav-tabs li').length).toBe(4);
   });
 });
