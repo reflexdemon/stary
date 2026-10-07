@@ -20,8 +20,11 @@
 #   GUARD_LOCAL_HASH        bypass the production build with a literal hash
 #   GUARD_DEPLOYED_HASH_URL override the marker URL (file:// or http(s))
 #   GUARD_SKIP_DEPLOY=1     print the would-run deploy command and stop before
-#                           `npm run deploy:nobuild` (no-build deploy that omits
-#                           --cname, so a skipped build never rewrites the CNAME)
+#                           `npm run deploy:nobuild` (no-build deploy; its
+#                           --cname flag must keep rewriting the CNAME file —
+#                           gh-pages force-pushes the whole tree, so any deploy
+#                           without it deletes CNAME and GitHub Pages drops the
+#                           custom domain, 404ing the site)
 #
 # Decisions never err toward a skip:
 #   - marker absent (HTTP 404)              -> DEPLOY (bootstraps the marker)

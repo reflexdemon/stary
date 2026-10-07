@@ -145,7 +145,10 @@ case_8_differing_marker_deploys() {
   fi
 }
 
-case_9_no_build_deploy_omits_cname() {
+case_9_nobuild_deploy_keeps_cname() {
+  # Regression guard: gh-pages force-pushes the whole branch tree, so every
+  # deploy must (re)write the CNAME file. A deploy:nobuild script without
+  # --cname deletes CNAME and GitHub Pages drops the custom domain (404).
   local marker cmd_line
   marker="$TMP_ROOT/marker-cname.txt"
   printf 'dddddddddddddddd' > "$marker"
@@ -157,10 +160,10 @@ case_9_no_build_deploy_omits_cname() {
   if [ "$GLOBAL_RC" -eq 0 ] \
      && printf '%s' "$GLOBAL_OUT" | grep -q 'DEPLOY:' \
      && printf '%s' "$cmd_line" | grep -q 'npm run deploy:nobuild' \
-     && ! printf '%s' "$cmd_line" | grep -qi 'cname'; then
-    record 0 "9 no-build deploy command omits --cname"
+     && grep -q '"deploy:nobuild": "[^"]*--cname=star\.vpv\.io' "$SCRIPT_DIR/../package.json"; then
+    record 0 "9 no-build deploy script keeps --cname"
   else
-    record 1 "9 no-build deploy command omits --cname" "rc=$GLOBAL_RC out=$GLOBAL_OUT cmd=$cmd_line"
+    record 1 "9 no-build deploy script keeps --cname" "rc=$GLOBAL_RC out=$GLOBAL_OUT cmd=$cmd_line"
   fi
 }
 
@@ -172,7 +175,7 @@ case_5_abort_on_malformed_local_hash
 case_6_skip_when_deployed_marker_matches
 case_7_network_failure_deploys
 case_8_differing_marker_deploys
-case_9_no_build_deploy_omits_cname
+case_9_nobuild_deploy_keeps_cname
 
 printf '\nsummary: %d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
