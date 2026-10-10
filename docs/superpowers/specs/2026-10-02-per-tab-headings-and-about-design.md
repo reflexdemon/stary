@@ -32,8 +32,36 @@ the app displays.
 ## Approach
 
 Extend the existing nav `links` array in `AppComponent` so each entry carries its own
-`heading` and `overview`, and look up the active entry from the already-present
-`route.fragment | async`.
+`heading` and `overview`, and look up the active entry from the current route.
+
+> **Correction (2026-10-10).** The first implementation looked up the active entry from
+> `route.fragment | async`, assuming the nav's `[routerLink]="link.fragment"` produced a URL
+> hash. It does not: this app uses path routing (`provideRouter(routes)`, no `useHash`), so
+> `ActivatedRoute.fragment` is the URL's `#`-fragment and is *always* `null`. The heading and
+> overview therefore never rendered, and the nav active-tab highlight (`[activeId]`) had been
+> silently broken since the original commit. The approach below was corrected to derive the
+> active entry from the router URL. Unit tests passed throughout only because they stubbed
+> `ActivatedRoute` rather than navigating the real router.
+
+The active entry is derived from the router. `AppComponent` injects `Router` and exposes:
+
+```ts
+private router = inject(Router);
+
+readonly activePage$ = this.router.events.pipe(
+  filter(event => event instanceof NavigationEnd),
+  map(() => this.pageFor(this.currentFragment())),
+  startWith(this.pageFor(this.currentFragment())),
+);
+
+private currentFragment(): string {
+  return this.router.url.split(/[?#]/)[0].split('/')[1] ?? '';
+}
+```
+
+`currentFragment()` reads the first path segment of the current URL. `startWith` seeds the
+observable with the page for the current URL at subscription time, so the heading is correct
+even before the first `NavigationEnd`; subsequent navigations update it.
 
 ### Alternatives considered
 
@@ -44,12 +72,12 @@ apart, and conflicts with the existing `<h2>` in `PageNotFoundComponent`.
 **Put `heading` / `overview` in route `data`.** The most idiomatic Angular placement, since
 metadata sits beside the route definition. Rejected: the `ActivatedRoute` injected into
 `AppComponent` is the *root* route, so reading child route data requires `routerState`
-traversal or router-event plumbing. It also forces `provideRouter([])` to become
-`provideRouter(routes)` in the existing spec, for no user-visible gain.
+traversal or router-event plumbing. It also forces the spec's `provideRouter([])` to become
+`provideRouter(routes)`, for no user-visible gain.
 
-**Chosen:** the `links` array. One source of truth means the nav label, heading and overview
-cannot disagree, it reuses the async-pipe pattern already in `app.component.html`, and it
-touches two files.
+**Chosen:** the `links` array plus a router-derived active page. One source of truth means the
+nav label, heading and overview cannot disagree, it reuses the async-pipe pattern already in
+`app.component.html`, and it touches two source files.
 
 ## Page copy
 
@@ -78,7 +106,8 @@ Accuracy notes:
 
 ### `src/app/app.component.ts`
 
-Add `heading` and `overview` to each `links` entry, and a lookup helper:
+Add `heading` and `overview` to each `links` entry, a lookup helper, and the router-derived
+active page shown in Approach:
 
 ```ts
 links = [
@@ -92,28 +121,43 @@ links = [
     overview: 'What Stary is, who built it, and the vpv-panchangam API that powers every calculation.' },
 ];
 
+private router = inject(Router);
+
+readonly activePage$ = this.router.events.pipe(
+  filter(event => event instanceof NavigationEnd),
+  map(() => this.pageFor(this.currentFragment())),
+  startWith(this.pageFor(this.currentFragment())),
+);
+
 pageFor(fragment: string) {
   return this.links.find(l => l.fragment === fragment);
+}
+
+private currentFragment(): string {
+  return this.router.url.split(/[?#]/)[0].split('/')[1] ?? '';
 }
 ```
 
 ### `src/app/app.component.html`
 
-Replace the static `<h1>` with a guarded block. Nesting inside `@if` means `pageFor()`
-returns `undefined` on an unmatched route and nothing renders:
+Replace the static `<h1>` with a guarded block driven by `activePage$`. The `@if` means
+`pageFor()` returning `undefined` (unknown route) renders nothing:
 
 ```html
-@if (route.fragment | async; as fragment) {
-  @if (pageFor(fragment); as page) {
-    <h1>{{ page.heading }}</h1>
-    <p class="page-overview">{{ page.overview }}</p>
-  }
+<ul ngbNav [activeId]="(activePage$ | async)?.fragment" class="nav-tabs navbar-primary">
+  ...
+</ul>
+
+@if (activePage$ | async; as page) {
+  <h1>{{ page.heading }}</h1>
+  <p class="page-overview">{{ page.overview }}</p>
 }
 <router-outlet></router-outlet>
 ```
 
-No signals and no router subscription: the existing `route.fragment | async` pattern is
-reused. No `<h1>` fallback is provided, because a wrong heading is worse than none.
+The same `activePage$` also feeds the nav's `[activeId]`, which fixes the active-tab
+highlight that `route.fragment` had silently broken. No `<h1>` fallback is provided, because
+a wrong heading is worse than none.
 
 ### `src/app/app.component.scss`
 
@@ -204,12 +248,24 @@ around the colour lookup.
 
 ## Testing
 
-Extend `app.component.spec.ts`, which already has two passing tests that stay untouched:
+`app.component.spec.ts` uses a **real router** (`provideRouter` over a set of blank
+stand-in routes matching the four fragments plus the `**` wildcard) and navigates with
+`Router.navigateByUrl`, then asserts on the rendered DOM:
 
-- renders the Timeline heading and overview when the router starts at `/timeline`
+- renders the Timeline heading and overview at `/timeline`
+- swaps heading and overview when the route changes to `/about`
+- marks the active nav tab (`a.nav-link.active`) from the current route
+- renders no heading or overview for an unknown route
 - `pageFor()` returns the matching entry for a known fragment and `undefined` for an
   unknown one
-- the existing `title === 'stary'` assertion is unchanged
+- the existing `title === 'stary'` assertion and the "renders all four nav tabs" check are
+  unchanged
+
+> **Correction (2026-10-10).** The original test stubbed `ActivatedRoute` with a
+> `BehaviorSubject` and pushed fragment values directly, which verified only the template
+> wiring and not the routing that drives it — the stub is exactly what masked the
+> `route.fragment` bug. Tests now exercise the real router so the heading cannot silently
+> stop rendering again.
 
 No test asserts on About page prose; asserting on static copy is brittle, and the existing
 `about.component.spec.ts` "should create" test already covers the component mounting.

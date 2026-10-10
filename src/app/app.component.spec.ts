@@ -1,13 +1,36 @@
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { provideRouter, Router, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
+
+@Component({ template: '', standalone: true })
+class BlankComponent {}
+
+const testRoutes: Routes = [
+  { path: 'timeline', component: BlankComponent },
+  { path: 'list', component: BlankComponent },
+  { path: 'home', component: BlankComponent },
+  { path: 'about', component: BlankComponent },
+  { path: '', redirectTo: '/timeline', pathMatch: 'full' },
+  { path: '**', component: BlankComponent },
+];
+
+async function renderAt(url: string) {
+  const router = TestBed.inject(Router);
+  const fixture = TestBed.createComponent(AppComponent);
+  fixture.detectChanges();
+  await router.navigateByUrl(url);
+  fixture.detectChanges();
+  await fixture.whenStable();
+  fixture.detectChanges();
+  return fixture;
+}
 
 describe('AppComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideRouter([])]
+      providers: [provideRouter(testRoutes)],
     });
   });
 
@@ -48,22 +71,15 @@ describe('AppComponent', () => {
 });
 
 describe('AppComponent heading', () => {
-  let fragment$: BehaviorSubject<string | null>;
-
   beforeEach(() => {
-    fragment$ = new BehaviorSubject<string | null>('timeline');
     TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [
-        provideRouter([]),
-        { provide: ActivatedRoute, useValue: { fragment: fragment$.asObservable() } },
-      ],
+      providers: [provideRouter(testRoutes)],
     });
   });
 
-  it('renders the Timeline heading for the timeline fragment', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+  it('renders the Timeline heading and overview at /timeline', async () => {
+    const fixture = await renderAt('/timeline');
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.container h1')?.textContent?.trim()).toBe('Timeline');
     expect(el.querySelector('.container p.page-overview')?.textContent?.trim()).toBe(
@@ -71,10 +87,12 @@ describe('AppComponent heading', () => {
     );
   });
 
-  it('swaps heading and overview when the fragment changes', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+  it('swaps heading and overview when the route changes', async () => {
+    const fixture = await renderAt('/timeline');
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/about');
     fixture.detectChanges();
-    fragment$.next('about');
+    await fixture.whenStable();
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.container h1')?.textContent?.trim()).toBe('About');
@@ -83,10 +101,14 @@ describe('AppComponent heading', () => {
     );
   });
 
-  it('renders no heading for an unknown fragment', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fragment$.next('does-not-exist');
-    fixture.detectChanges();
+  it('marks the active nav tab from the current route', async () => {
+    const fixture = await renderAt('/about');
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.container ul.nav-tabs a.nav-link.active')?.textContent?.trim()).toBe('About');
+  });
+
+  it('renders no heading for an unknown route', async () => {
+    const fixture = await renderAt('/does-not-exist');
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.container h1')).toBeNull();
     expect(el.querySelector('.container p.page-overview')).toBeNull();
@@ -95,9 +117,8 @@ describe('AppComponent heading', () => {
     expect(el.querySelector('.container h2')).toBeNull();
   });
 
-  it('still renders all four nav tabs', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+  it('still renders all four nav tabs', async () => {
+    const fixture = await renderAt('/timeline');
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelectorAll('.container ul.nav-tabs li').length).toBe(4);
   });

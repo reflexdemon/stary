@@ -1,7 +1,8 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { filter, map, startWith } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -28,13 +29,23 @@ export class AppComponent {
     },
     {
       title: 'About', fragment: 'about', heading: 'About',
-      overview: 'What Stary is, who built it, and the vpv-panchangam API that powers every calculation.'
+      overview: 'Stary is a side project from Venkateswara to explore the power of the vpv-panchangam API.'
     },
   ];
 
-  route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  readonly activePage$ = this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd),
+    map(() => this.pageFor(this.currentFragment())),
+    startWith(this.pageFor(this.currentFragment())),
+  );
 
   pageFor(fragment: string) {
     return this.links.find(link => link.fragment === fragment);
+  }
+
+  private currentFragment(): string {
+    return this.router.url.split(/[?#]/)[0].split('/')[1] ?? '';
   }
 }

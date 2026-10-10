@@ -1,6 +1,6 @@
 <div class="container">
-  <!-- your navs bound to current route fragments -->
-  <ul ngbNav [activeId]="route.fragment | async" class="nav-tabs navbar-primary">
+  <!-- your navs bound to the current route -->
+  <ul ngbNav [activeId]="(activePage$ | async)?.fragment" class="nav-tabs navbar-primary">
     @for (link of links; track link) {
       <li [ngbNavItem]="link.fragment">
         <a ngbNavLink [routerLink]="link.fragment">{{ link.title }}</a>
@@ -8,11 +8,9 @@
     }
   </ul>
 
-  @if (route.fragment | async; as fragment) {
-    @if (pageFor(fragment); as page) {
-      <h1>{{ page.heading }}</h1>
-      <p class="page-overview">{{ page.overview }}</p>
-    }
+  @if (activePage$ | async; as page) {
+    <h1>{{ page.heading }}</h1>
+    <p class="page-overview">{{ page.overview }}</p>
   }
   <router-outlet></router-outlet>
 </div>
