@@ -97,7 +97,7 @@ describe('AppComponent heading', () => {
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.container h1')?.textContent?.trim()).toBe('About');
     expect(el.querySelector('.container p.page-overview')?.textContent?.trim()).toBe(
-      'What Stary is, who built it, and the vpv-panchangam API that powers every calculation.'
+      'Stary is a side project from Venkateswara to explore the power of the vpv-panchangam API.'
     );
   });
 
